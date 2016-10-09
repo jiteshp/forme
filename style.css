@@ -1333,6 +1333,9 @@ textarea {
     padding-top: 150px;
   }
 }
+.panel:nth-child( odd ) {
+  background-color: #f3f3f3;
+}
 .panel-entry {
   padding-bottom: 60px;
   padding-top: 60px;
