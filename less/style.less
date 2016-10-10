@@ -337,11 +337,16 @@ h1, .h1 {
 }
 
 hr {
+	border: 0;
 	border-bottom: solid 3px @border-color;
 	height: @base-line-height;
 	margin: 0 auto;
 	margin-bottom: @base-line-height * 2;
 	max-width: @grid-gutter-width * 2;
+	
+	&.full-width {
+		max-width: none;
+	}
 }
 
 ol, ul {
@@ -992,6 +997,11 @@ textarea {
 	.hentry {
 		max-width: none;
 	}
+	
+	.entry-header {
+		margin-bottom: @base-line-height;
+		text-align: center;
+	}
 }
 
 //
@@ -1008,6 +1018,21 @@ textarea {
 	
 	.custom-logo-link, .site-title a {
 		cursor: text;
+	}
+	
+	.site-branding {
+		float: none;
+		margin: 0 auto;
+		text-align: center;
+	}
+	
+	.custom-logo-link {
+		float: none;
+	}
+	
+	.custom-logo {
+		float: none;
+		margin: 0 auto;
 	}
 	
 	.hentry {
@@ -1043,13 +1068,11 @@ textarea {
 		.panel-entry {
 			margin: 0 auto;
 			max-width: 720px;
-			padding-bottom: @base-line-height * 3;
-			padding-top: @base-line-height * 3;
 			text-align: center;
 			
 			@media( min-width: @screen-md ) {
-				padding-bottom: @base-line-height * 5;
-				padding-top: @base-line-height * 5;
+				padding-bottom: @base-line-height * 4;
+				padding-top: @base-line-height * 4;
 			}
 		}
 	}
@@ -1263,6 +1286,7 @@ textarea {
 	
 	.testimonial-entry-title {
 		a {
+			color: @heading-text-color;
 			cursor: text;
 			font-weight: normal;
 			margin-bottom: 0 !important;
