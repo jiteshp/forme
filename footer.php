@@ -26,7 +26,7 @@
 			
 			<span class="designer">
 				<?php _e( 'Theme by ', 'forme' ); ?>
-				<a href="https://jiteshpatil.com/" rel="designer"><?php _e( 'Jitesh Patil', 'forme' ); ?></a>
+				<a href="http://fastbizmarketing.com/" rel="designer"><?php _e( 'FastBiz Marketing', 'forme' ); ?></a>
 			</span>
 		</div>
 	</footer>
