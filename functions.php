@@ -101,16 +101,7 @@ add_action( 'widgets_init', 'forme_widgets_init' );
 function forme_scripts() {
 	wp_enqueue_style( 'forme-style', get_stylesheet_uri(), array( 'dashicons' ) );
 	
-	$text_font_url = get_theme_mod( 'forme_text_font_url', 
-		'https://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400i,700' );
-	wp_enqueue_style( 'forme-text-font', $text_font_url );
-
-	$heading_font_url = get_theme_mod( 'forme_heading_font_url', 
-		'https://fonts.googleapis.com/css?family=Hind:400,700' );
-		
-	if( $text_font_url != $heading_font_url ) {
-		wp_enqueue_style( 'forme-heading-font', $heading_font_url );
-	}
+	wp_enqueue_style( 'forme-text-font', forme_get_fonts_url() );
 	
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -166,21 +157,21 @@ function forme_customize_register( $wpc ) {
 		'title'		=> __( 'Fonts', 'forme' ),
 	) );
 	
-	$wpc->add_setting( 'forme_heading_font_url', array(
-		'default' 	=> 'https://fonts.googleapis.com/css?family=Hind:400,700',
+	$wpc->add_setting( 'forme_text_font', array(
+		'default' 	=> 'Gentium Book Basic',
 	) );
-	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_heading_font_url', array(
-		'label'		=> __( 'Heading Font', 'forme' ),
+	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_text_font', array(
+		'label'		=> __( 'Text Font', 'forme' ),
 		'section'	=> 'forme_fonts',
 		'type'		=> 'select',
 		'choices'	=> forme_get_fonts(),
 	) ) );
 	
-	$wpc->add_setting( 'forme_text_font_url', array(
-		'default' 	=> 'https://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400i,700',
+	$wpc->add_setting( 'forme_heading_font', array(
+		'default' 	=> 'Hind',
 	) );
-	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_text_font_url', array(
-		'label'		=> __( 'Text Font', 'forme' ),
+	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_heading_font', array(
+		'label'		=> __( 'Heading Font', 'forme' ),
 		'section'	=> 'forme_fonts',
 		'type'		=> 'select',
 		'choices'	=> forme_get_fonts(),
@@ -195,32 +186,28 @@ add_action( 'customize_register', 'forme_customize_register' );
  * @since 1.0.0
  */
 function forme_custom_styles() {
-	$accent_color = get_theme_mod( 'forme_accent_color', '#27AE60' );
-	$alt_accent_color = get_theme_mod( 'forme_alt_accent_color', '#1B7741' );
-	$panel_text_color = get_theme_mod( 'forme_panel_text_color', '#FFFFFF' );
-	$heading_font_url = get_theme_mod( 'forme_heading_font_url', 
-		'https://fonts.googleapis.com/css?family=Hind:400,700' );
-	$text_font_url = get_theme_mod( 'forme_text_font_url', 
-		'https://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400i,700' );
-	$fonts = forme_get_fonts();
+	$accent_color 		= get_theme_mod( 'forme_accent_color', '#27AE60' );
+	$alt_accent_color 	= get_theme_mod( 'forme_alt_accent_color', '#1B7741' );
+	$panel_text_color 	= get_theme_mod( 'forme_panel_text_color', '#FFFFFF' );
+	$heading_font 		= get_theme_mod( 'forme_heading_font', 'Hind' );
+	$text_font 			= get_theme_mod( 'forme_text_font', 'Gentium Book Basic' );
+	$fonts				= forme_get_fonts();
 	
 	ob_start(); ?>
 <style type="text/css">
 	body, input, select, textarea {
-		font-family: '<?php echo $fonts[ $text_font_url ] ?>', serif;
+		font-family: '<?php echo $fonts[ $text_font ] ?>', serif;
 	}
 	
-	<?php if( $heading_font_url != $text_font_url ): ?>
-		#primary-menu,
-		.entry-meta,
-		.h1, h1, .h2, h2, .h3, h3, .h4, h4, .h5, h5, .h6, h6, 
-		input[type=submit], button[type=submit], .more-link, .button, .button-min,
-		.display-posts-listing-grid-2 .listing-item .title,
-		.display-posts-listing-grid-3 .listing-item .title,
-		.display-posts-listing-grid-4 .listing-item .title {
-			font-family: '<?php echo $fonts[ $heading_font_url ] ?>', '<?php echo $fonts[ $text_font_url ] ?>', serif;
-		}
-	<?php endif; ?>
+	#primary-menu,
+	.entry-meta,
+	.h1, h1, .h2, h2, .h3, h3, .h4, h4, .h5, h5, .h6, h6, 
+	input[type=submit], button[type=submit], .more-link, .button, .button-min,
+	.display-posts-listing-grid-2 .listing-item .title,
+	.display-posts-listing-grid-3 .listing-item .title,
+	.display-posts-listing-grid-4 .listing-item .title {
+		font-family: '<?php echo $fonts[ $heading_font ] ?>', serif;
+	}
 	
 	blockquote {
 		border-left-color: <?php echo $accent_color ?>;
@@ -271,7 +258,7 @@ function forme_custom_styles() {
 		color: <?php echo $alt_accent_color ?> !important;
 	}
 	
-	.page-header, .widget_mailerlite_widget:before {
+	.widget_mailerlite_widget:before {
 		background-color: <?php echo $accent_color ?>;
 	}
 	
@@ -430,6 +417,25 @@ function form_is_panel_page() {
 }
 
 /**
+ * Returns a Google fonts URL.
+ *
+ * @since 1.0.0
+ * @return strong
+ */
+function forme_get_fonts_url() {
+	$text_font 		= get_theme_mod( 'forme_text_font', 'Gentium Book Basic' );
+	$heading_font 	= get_theme_mod( 'forme_heading_font', 'Hind' );
+	$fonts			= forme_get_fonts();
+	
+	$fonts_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $fonts[ $text_font ] );
+	if( $text_font != $heading_font ) {
+		$fonts_url .= '|' . urlencode( $fonts[ $heading_font ] );
+	}
+	
+	return $fonts_url;
+}
+
+/**
  * Returns a font array.
  *
  * @since 1.0.0
@@ -437,39 +443,45 @@ function form_is_panel_page() {
  */
 function forme_get_fonts() {
 	return array(
-		'https://fonts.googleapis.com/css?family=Alegreya:400,400i,700'			  =>
-			__( 'Alegreya', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700'	  =>
-			__( 'Alegreya Sans', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,700'	  =>
-			__( 'Archivo Narrow', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Asap:400,400i,700'				  =>
-			__( 'Asap', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Cambay:400,400i,700'			  =>
-			__( 'Cambay', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Cardo:400,400i,700'			  =>
-			__( 'Cardo', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Catamaran:400,400i,700'		  =>
-			__( 'Catamaran', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Ek+Mukta:400,400i,700'			  =>
-			__( 'Ek Mukta', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,700'		  =>
-			__( 'Fira Sans', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400i,700' =>
-			__( 'Gentium Book Basic', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Hind:400,700'					  =>
-			__( 'Hind', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Lato:400,400i,700'				  =>
-			__( 'Lato', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Montserrat:400,400i,700'		  =>
-			__( 'Montserrat', 'forme' ),
-		'https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700'			  =>
-			__( 'PT Sans', 'forme' ),
-		'https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700'			  =>
-			__( 'PT Serif', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700'	  =>
-			__( 'Source Sans Pro', 'forme' ),
-		'https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,700'		  =>
-			__( 'Source Serif Pro', 'forme' ),
+		'Alegreya',
+		'Alegreya Sans',
+		'Assistant',
+		'Cairo',
+		'Catamaran',
+		'Crimson Text',
+		'Droid Sans',
+		'Droid Serif',
+		'Ek Mukta',
+		'Exo',
+		'Exo 2',
+		'Fira Sans',
+		'Frank Ruhl Libre',
+		'Gentium Basic',
+		'Gentium Book Basic',
+		'Hind',
+		'Lato',
+		'Libre Baskerville',
+		'Libre Franklin',
+		'Lora',
+		'Merriweather',
+		'Merriweather Sans',
+		'Noto Sans',
+		'Noto Serif',
+		'Open Sans',
+		'Playfair Display',
+		'Poppins',
+		'Prompt',
+		'Raleway',
+		'Roboto',
+		'Roboto Condensed',
+		'Roboto Slab',
+		'Rubik',
+		'Source Sans Pro',
+		'Titillium Web',
+		'Trirong',
+		'Taviraj',
+		'Ubuntu',
+		'Vollkorn',
+		'Work Sans',
 	);
 }
