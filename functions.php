@@ -158,7 +158,7 @@ function forme_customize_register( $wpc ) {
 	) );
 	
 	$wpc->add_setting( 'forme_text_font', array(
-		'default' 	=> 15,
+		'default' 	=> 14,
 	) );
 	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_text_font', array(
 		'label'		=> __( 'Text Font', 'forme' ),
@@ -168,7 +168,7 @@ function forme_customize_register( $wpc ) {
 	) ) );
 	
 	$wpc->add_setting( 'forme_heading_font', array(
-		'default' 	=> 14,
+		'default' 	=> 15,
 	) );
 	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_heading_font', array(
 		'label'		=> __( 'Heading Font', 'forme' ),
