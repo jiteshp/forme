@@ -1222,6 +1222,7 @@ textarea {
 }
 .widget-area .widget:last-child {
   border-bottom: 0;
+  margin-bottom: 0;
 }
 .widget-area .widget.widget_image {
   padding: 0;
