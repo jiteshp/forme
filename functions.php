@@ -158,7 +158,7 @@ function forme_customize_register( $wpc ) {
 	) );
 	
 	$wpc->add_setting( 'forme_text_font', array(
-		'default' 	=> 'Gentium Book Basic',
+		'default' 	=> 15,
 	) );
 	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_text_font', array(
 		'label'		=> __( 'Text Font', 'forme' ),
@@ -168,7 +168,7 @@ function forme_customize_register( $wpc ) {
 	) ) );
 	
 	$wpc->add_setting( 'forme_heading_font', array(
-		'default' 	=> 'Hind',
+		'default' 	=> 14,
 	) );
 	$wpc->add_control( new WP_Customize_Control( $wpc, 'forme_heading_font', array(
 		'label'		=> __( 'Heading Font', 'forme' ),
@@ -189,8 +189,8 @@ function forme_custom_styles() {
 	$accent_color 		= get_theme_mod( 'forme_accent_color', '#27AE60' );
 	$alt_accent_color 	= get_theme_mod( 'forme_alt_accent_color', '#1B7741' );
 	$panel_text_color 	= get_theme_mod( 'forme_panel_text_color', '#FFFFFF' );
-	$heading_font 		= get_theme_mod( 'forme_heading_font', 'Hind' );
-	$text_font 			= get_theme_mod( 'forme_text_font', 'Gentium Book Basic' );
+	$heading_font 		= get_theme_mod( 'forme_heading_font', 15 );
+	$text_font 			= get_theme_mod( 'forme_text_font', 14 );
 	$fonts				= forme_get_fonts();
 	
 	ob_start(); ?>
@@ -423,8 +423,8 @@ function form_is_panel_page() {
  * @return strong
  */
 function forme_get_fonts_url() {
-	$text_font 		= get_theme_mod( 'forme_text_font', 'Gentium Book Basic' );
-	$heading_font 	= get_theme_mod( 'forme_heading_font', 'Hind' );
+	$text_font 		= get_theme_mod( 'forme_text_font', 14 );
+	$heading_font 	= get_theme_mod( 'forme_heading_font', 15 );
 	$fonts			= forme_get_fonts();
 	
 	$fonts_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $fonts[ $text_font ] );
