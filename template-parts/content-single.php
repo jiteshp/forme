@@ -16,4 +16,6 @@
 	<div class="entry-content">
 		<?php the_content(); ?>
 	</div>
+	
+	<?php the_tags( '<footer class="entry-footer entry-meta entry-tags">' . __( 'Tags: ', 'forme' ), ', ', '</footer>' ); ?>
 </article>
