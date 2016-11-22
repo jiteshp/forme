@@ -20,7 +20,7 @@ get_header(); ?>
 							</header>
 							
 							<div class="entry-content">
-								<p><?php _e( 'The page you&rsquo;re looking for couldn&rsquo;t be found. It may have been removed or moved elsewhere. Perhaps try a search.' ); ?></p>
+								<p><?php _e( 'The page you&rsquo;re looking for couldn&rsquo;t be found. It may have been removed or moved elsewhere. Perhaps try a search.', 'forme' ); ?></p>
 							
 								<?php get_search_form(); ?>
 							</div>

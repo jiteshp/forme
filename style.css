@@ -2,9 +2,9 @@
  *	Theme Name:			Forme
  *	Theme URI:			https://github.com/jiteshp/forme
  *	Version:			1.0.0
- *	Author:				Jitesh Patil
- *	Author URI:			https://jiteshpatil.com/
- *	Text Domain:		fastbiz
+ *	Author:				Jitesh Patil, Vaishali Badgujar
+ *	Author URI:			https://www.fastbizmarketing.com/
+ *	Text Domain:		forme
  *	License: 			GNU General Public License v2 or later
  *	License URI: 		http://www.gnu.org/licenses/gpl-2.0.html
  *	Description:		Forme is a responsive theme. Features include: jetpack featured posts, custom Google Fonts, 1 sidebar widget area & landing page template.
@@ -1111,6 +1111,11 @@ textarea {
   background-color: transparent;
   color: #1b7741 !important;
 }
+.sticky .entry-sticky {
+  background-color: #f5f5f5;
+  display: inline-block;
+  padding: 0.1em 0.3em;
+}
 #comments-list,
 #comments-list ol {
   list-style: none;
@@ -1194,6 +1199,10 @@ textarea {
 .logged-in-as,
 .comment-notes {
   margin-bottom: 30px;
+}
+.bypostauthor .comment-author {
+  background-color: #f5f5f5;
+  padding: 1em;
 }
 .widget-area {
   border-top: solid 1px #eee;

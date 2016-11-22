@@ -6,6 +6,12 @@
 	<?php endif; ?>
 	
 	<header class="entry-header">
+		<?php if(is_sticky()): ?>
+			<div class="entry-meta">
+				<span class="entry-sticky"><?php _e( 'Featured', 'forme' ); ?></span>
+			</div>
+		<?php endif; ?>
+		
 		<h2 class="entry-title">
 			<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 		</h2>

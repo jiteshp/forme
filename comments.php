@@ -16,8 +16,10 @@ if( post_password_required() ) {
 <div id="comments" class="entry-comments">
 	<?php if( have_comments() ): ?>
 		<h2 id="comments-title">
-			<?php comments_number( '', __( 'Comments', 'scrunch' ), __( '% Comments', 'scrunch' ) ); ?>
+			<?php comments_number( '', __( 'Comments', 'forme' ), __( '% Comments', 'forme' ) ); ?>
 		</h2>
+		
+		<?php the_comments_navigation(); ?>
 		
 		<ol id="comments-list">
 			<?php
@@ -28,13 +30,16 @@ if( post_password_required() ) {
 				) );
 			?>
 		</ol>
+		
+		<?php the_comments_navigation(); ?>
+			
 	<?php endif; ?>
 	
 	<?php 
 		if( ! comments_open() && 
 			get_comments_number() && 
 			post_type_supports( get_post_type(), 'comments' ) ): ?>
-		<p class="no-comments"><?php _e( 'Comments are closed.', 'scrunch' ); ?></p>
+		<p class="no-comments"><?php _e( 'Comments are closed.', 'forme' ); ?></p>
 	<?php endif; ?>
 	
 	<?php comment_form(); ?>
