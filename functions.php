@@ -5,7 +5,7 @@
  * @package Forme
  * @since 1.0.0
  */
- 
+
 /**
  * Set the content width based on the theme's design.
  *
@@ -16,20 +16,20 @@ function forme_content_width() {
 }
 
 add_action( 'after_setup_theme', 'forme_content_width' );
- 
+
 /**
  * Add support for various theme features.
  *
  * @since 1.0.0
  */
-if( ! function_exists( 'forme_setup' ) ) {
+if ( ! function_exists( 'forme_setup' ) ) {
 	function forme_setup() {
 		load_theme_textdomain( 'forme', get_template_directory() . '/languages' );
-		
+
 		add_theme_support( 'automatic-feed-links' );
-		
+
 		add_theme_support( 'title-tag' );
-		
+
 		add_theme_support( 'custom-logo', array(
 			'flex-width'  => true,
 			'header-text' => array( 'site-title', 'site-description' ),
@@ -44,28 +44,31 @@ if( ! function_exists( 'forme_setup' ) ) {
 			'gallery',
 			'search-form',
 		) );
-		
-		add_theme_support( 'jetpack-responsive-videos' );
-		
-		add_theme_support( 'jetpack-testimonial' );
-		
+
+		add_theme_support( 'custom-header', array(
+			'flex-height' => true,
+			'flex-width'  => true,
+			'height'	  => 1280,
+			'width'		  => 1920,
+		) );
+
 		add_theme_support( 'featured-content', array(
 			'filter'     => 'forme_get_featured_content',
 			'max_posts'  => 1,
 			'post_types' => array( 'page' ),
 		) );
-		
+
 		add_theme_support( 'post-thumbnails' );
 		set_post_thumbnail_size( 1200, 9999 );
-		
+
 		add_post_type_support( 'page', 'excerpt' );
-		
+
 		register_nav_menu( 'primary-menu', __( 'Primary Menu', 'forme' ) );
 	}
-}
+} // End if().
 
 add_action( 'after_setup_theme', 'forme_setup' );
- 
+
 /**
  * Register theme widget areas.
  *
@@ -80,7 +83,7 @@ function forme_widgets_init() {
 		'before_title'	=> '<h4 class="widget-title">',
 		'after_title'	=> '</h4>',
 	) );
-	
+
 	register_sidebar( array(
 		'name'			=> __( 'Landing Pages', 'forme' ),
 		'id'			=> 'sidebar-landing',
@@ -92,7 +95,7 @@ function forme_widgets_init() {
 }
 
 add_action( 'widgets_init', 'forme_widgets_init' );
- 
+
 /**
  * Enqueue theme scripts & styles.
  *
@@ -100,15 +103,20 @@ add_action( 'widgets_init', 'forme_widgets_init' );
  */
 function forme_scripts() {
 	wp_enqueue_style( 'forme-style', get_stylesheet_uri(), array( 'dashicons' ) );
-	
+
 	wp_enqueue_style( 'forme-text-font', forme_get_fonts_url() );
-	
+
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
-	
-	wp_enqueue_script( 'twentysixteen-script', get_template_directory_uri() . '/js/functions.js', 
-		array( 'jquery' ), null, true );
+
+	wp_enqueue_script( 'forme-backstretch', get_template_directory_uri() . '/js/jquery.backstretch.min.js', array( 'jquery' ), null, true );
+
+	wp_enqueue_script( 'forme-script', get_template_directory_uri() . '/js/functions.js', array( 'jquery', 'forme-backstretch' ), null, true );
+
+	wp_localize_script( 'forme-script', 'forme', array(
+		'header_images' => forme_get_header_image_urls(),
+	) );
 }
 
 add_action( 'wp_enqueue_scripts', 'forme_scripts' );
@@ -120,7 +128,7 @@ add_action( 'wp_enqueue_scripts', 'forme_scripts' );
  * @param WP_Customize_Manager $wpc
  */
 function forme_customize_register( $wpc ) {
-	$colors = array( 
+	$colors = array(
 		'forme_accent_color' => array(
 			'active_callback'	=> '',
 			'default'   		=> '#27AE60',
@@ -133,15 +141,9 @@ function forme_customize_register( $wpc ) {
 			'label'   			=> __( 'Alternate Accent Color', 'forme' ),
 			'sanitize_callback' => 'sanitize_hex_color',
 		),
-		'forme_panel_text_color' => array(
-			'active_callback'	=> 'form_is_panel_page',
-			'default'   		=> '#FFFFFF',
-			'label'   			=> __( 'Panel Text Color', 'forme' ),
-			'sanitize_callback' => 'sanitize_hex_color',
-		),
 	);
-	
-	foreach( $colors as $setting => $args ) {
+
+	foreach ( $colors as $setting => $args ) {
 		$wpc->add_setting( $setting, array(
 			'default' => $args['default'],
 		) );
@@ -151,12 +153,12 @@ function forme_customize_register( $wpc ) {
 			'section' 		  => 'colors',
 		) ) );
 	}
-	
+
 	$wpc->add_section( 'forme_fonts', array(
 		'priority'	=> 60,
 		'title'		=> __( 'Fonts', 'forme' ),
 	) );
-	
+
 	$wpc->add_setting( 'forme_text_font', array(
 		'default' 	=> 14,
 	) );
@@ -166,7 +168,7 @@ function forme_customize_register( $wpc ) {
 		'type'		=> 'select',
 		'choices'	=> forme_get_fonts(),
 	) ) );
-	
+
 	$wpc->add_setting( 'forme_heading_font', array(
 		'default' 	=> 15,
 	) );
@@ -188,36 +190,35 @@ add_action( 'customize_register', 'forme_customize_register' );
 function forme_custom_styles() {
 	$accent_color 		= get_theme_mod( 'forme_accent_color', '#27AE60' );
 	$alt_accent_color 	= get_theme_mod( 'forme_alt_accent_color', '#1B7741' );
-	$panel_text_color 	= get_theme_mod( 'forme_panel_text_color', '#FFFFFF' );
 	$heading_font 		= get_theme_mod( 'forme_heading_font', 15 );
 	$text_font 			= get_theme_mod( 'forme_text_font', 14 );
 	$fonts				= forme_get_fonts();
-	
+
 	ob_start(); ?>
 <style type="text/css">
 	body, input, select, textarea {
 		font-family: '<?php echo $fonts[ $text_font ] ?>', serif;
 	}
-	
+
 	#primary-menu,
 	.entry-meta,
-	.h1, h1, .h2, h2, .h3, h3, .h4, h4, .h5, h5, .h6, h6, 
+	.h1, h1, .h2, h2, .h3, h3, .h4, h4, .h5, h5, .h6, h6,
 	input[type=submit], button[type=submit], .more-link, .button, .button-min,
 	.display-posts-listing-grid-2 .listing-item .title,
 	.display-posts-listing-grid-3 .listing-item .title,
 	.display-posts-listing-grid-4 .listing-item .title {
 		font-family: '<?php echo $fonts[ $heading_font ] ?>', serif;
 	}
-	
+
 	blockquote {
 		border-left-color: <?php echo $accent_color ?>;
 	}
-	
+
 	a {
 		border-bottom-color: <?php echo $accent_color ?>;
 		color: <?php echo $accent_color ?>;
 	}
-	
+
 	.colored,
 	.display-posts-listing-grid-2 .listing-item .image:after,
 	.display-posts-listing-grid-3 .listing-item .image:after,
@@ -225,69 +226,63 @@ function forme_custom_styles() {
 	.image-link:after {
 		color: <?php echo $accent_color ?>;
 	}
-	
+
 	a:hover {
 		border-bottom-color: <?php echo $alt_accent_color ?>;
 		color: <?php echo $alt_accent_color ?>;
 	}
-	
-	input[type=submit], 
-	button[type=submit], 
+
+	input[type=submit],
+	button[type=submit],
 	.button {
 		background-color: <?php echo $accent_color ?>;
 		border-color: <?php echo $accent_color ?>;
 	}
-	
-	input[type=submit]:hover, 
-	button[type=submit]:hover, 
+
+	input[type=submit]:hover,
+	button[type=submit]:hover,
 	.button:hover {
 		background-color: <?php echo $alt_accent_color ?>;
 		border-color: <?php echo $alt_accent_color ?>;
 	}
-	
-	.button-min, 
+
+	.button-min,
 	.more-link {
 		border-color: <?php echo $accent_color ?>;
 		color: <?php echo $accent_color ?> !important;
 	}
-	
-	
-	.button-min:hover, 
+
+
+	.button-min:hover,
 	.more-link:hover {
 		border-color: <?php echo $alt_accent_color ?>;
 		color: <?php echo $alt_accent_color ?> !important;
 	}
-	
+
 	.widget_mailerlite_widget:before {
 		background-color: <?php echo $accent_color ?>;
 	}
-	
-	.panel-entry .hentry.has-post-thumbnail a, 
-	.panel-entry .hentry.has-post-thumbnail, 
-	.panel-entry .hentry.has-post-thumbnail .h1, 
-	.panel-entry .hentry.has-post-thumbnail h1, 
-	.panel-entry .hentry.has-post-thumbnail .h2, 
-	.panel-entry .hentry.has-post-thumbnail h2, 
-	.panel-entry .hentry.has-post-thumbnail .h3, 
-	.panel-entry .hentry.has-post-thumbnail h3, 
-	.panel-entry .hentry.has-post-thumbnail .h4, 
-	.panel-entry .hentry.has-post-thumbnail h4, 
-	.panel-entry .hentry.has-post-thumbnail .h5, 
-	.panel-entry .hentry.has-post-thumbnail h5, 
-	.panel-entry .hentry.has-post-thumbnail .h6, 
-	.panel-entry .hentry.has-post-thumbnail h6 {
-		color: <?php echo $panel_text_color ?>;
+
+	.panel:first-child,
+	.panel:first-child a,
+	.panel:first-child .h1, .panel:first-child h1,
+	.panel:first-child .h2, .panel:first-child h2,
+	.panel:first-child .h3, .panel:first-child h3,
+	.panel:first-child .h4, .panel:first-child h4,
+	.panel:first-child .h5, .panel:first-child h5,
+	.panel:first-child .h6, .panel:first-child h6 {
+		color: #<?php echo get_header_textcolor(); ?>
 	}
 
-	.panel-entry .hentry.has-post-thumbnail h2:after {
-		border-color: <?php echo $panel_text_color ?>;
+	.panel:first-child {
+		background-image: url( '<?php header_image(); ?>' );
 	}
 </style> <?php
 	echo ob_get_clean() . "\n\n";
 }
 
 add_action( 'wp_head', 'forme_custom_styles' );
- 
+
 /**
  * Customize excerpt length.
  *
@@ -300,7 +295,7 @@ function forme_excerpt_length( $length ) {
 }
 
 add_filter( 'excerpt_length', 'forme_excerpt_length' );
- 
+
 /**
  * Customize excerpt more tag.
  *
@@ -310,13 +305,12 @@ add_filter( 'excerpt_length', 'forme_excerpt_length' );
  */
 function forme_excerpt_more( $more ) {
 	global $post;
-	
-	return sprintf( '&hellip;<p><a href="%1$s" class="more-link">%2$s</a></p>',
-		esc_url( get_permalink( $post->ID ) ), __( 'Read More', 'forme' ) );
+
+	return sprintf( '&hellip;<p><a href="%1$s" class="more-link">%2$s</a></p>', esc_url( get_permalink( $post->ID ) ), __( 'Read More', 'forme' ) );
 }
 
 add_filter( 'excerpt_more', 'forme_excerpt_more' );
- 
+
 /**
  * Customize body classes.
  *
@@ -325,10 +319,10 @@ add_filter( 'excerpt_more', 'forme_excerpt_more' );
  * @return array
  */
 function forme_body_class( $classes ) {
-	if( ! is_active_sidebar( 'sidebar' ) ) {
+	if ( ! is_active_sidebar( 'sidebar' ) ) {
 		$classes[] = 'forme-no-sidebar';
 	}
-	
+
 	return $classes;
 }
 
@@ -340,7 +334,7 @@ add_filter( 'body_class', 'forme_body_class' );
  * @since 1.0.0
  */
 function forme_custom_logo() {
-	if( function_exists( 'the_custom_logo' ) ) {
+	if ( function_exists( 'the_custom_logo' ) ) {
 		the_custom_logo();
 	}
 }
@@ -354,12 +348,12 @@ function forme_custom_logo() {
  * @return boolean
  */
 function forme_featured_image_url( $post_id = 0, $size = 'full' ) {
-	if( ! $post_id ) {
+	if ( ! $post_id ) {
 		global $post;
 		$post_id = $post->ID;
 	}
-	
-	if( has_post_thumbnail( $post_id ) ) {
+
+	if ( has_post_thumbnail( $post_id ) ) {
 		$thumbnail_id = get_post_thumbnail_id( $post_id );
 		$featured_image = wp_get_attachment_image_src( $thumbnail_id, $size );
 		echo esc_url( $featured_image[0] );
@@ -385,35 +379,21 @@ function forme_get_featured_content() {
  */
 function forme_has_featured_content( $minimum = 1 ) {
 	if ( is_paged() ) {
-        return false;
+		return false;
 	}
- 
-    $minimum = absint( $minimum );
-    $featured_posts = apply_filters( 'forme_get_featured_content', array() );
- 
-    if ( ! is_array( $featured_posts ) ) {
-        return false;
-	}
- 
-    if ( $minimum > count( $featured_posts ) ) {
-        return false;
-	}
- 
-    return true;
-}
 
-/**
- * Checks if this is a panel page.
- *
- * @since 1.0.0
- * @return boolean
- */
-function form_is_panel_page() {
-	if( is_page() && is_page_template( 'templates/panels.php' ) ) {
-		return true;
+	$minimum = absint( $minimum );
+	$featured_posts = apply_filters( 'forme_get_featured_content', array() );
+
+	if ( ! is_array( $featured_posts ) ) {
+		return false;
 	}
-	
-	return false;
+
+	if ( $minimum > count( $featured_posts ) ) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -426,12 +406,12 @@ function forme_get_fonts_url() {
 	$text_font 		= get_theme_mod( 'forme_text_font', 14 );
 	$heading_font 	= get_theme_mod( 'forme_heading_font', 15 );
 	$fonts			= forme_get_fonts();
-	
+
 	$fonts_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $fonts[ $text_font ] );
-	if( $text_font != $heading_font ) {
+	if ( $text_font != $heading_font ) {
 		$fonts_url .= '|' . urlencode( $fonts[ $heading_font ] );
 	}
-	
+
 	return $fonts_url;
 }
 
@@ -484,4 +464,25 @@ function forme_get_fonts() {
 		'Vollkorn',
 		'Work Sans',
 	);
+}
+
+/**
+ * Returns all header image URLs in an array.
+ *
+ * @since 1.0.0
+ */
+function forme_get_header_image_urls() {
+	$header_images = get_uploaded_header_images();
+
+	if ( ! empty( $header_images ) ) {
+		$result = array();
+
+		foreach ( $header_images as $image ) {
+			$result[] = $image['url'];
+		}
+
+		return $result;
+	}
+
+	return false;
 }
